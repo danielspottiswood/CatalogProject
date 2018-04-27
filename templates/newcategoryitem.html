@@ -1,0 +1,38 @@
+<html>
+<head>
+	</head>
+
+
+	<body>
+	<div class = 'pane'>
+		<div class = 'header'>
+		<h1> Create a New Category Item:</h1>
+	</div>
+
+  <form action="{{ url_for('newCategoryItem', Category_id=Category_id )}}" method = 'post'>
+
+  <dl>
+	     <dt>Name:</dt>
+		     <dd><input type ='text' size='20' name='name' required></dd>
+            <dt>Description:</dt>
+                        <dd><textarea name = 'description' rows='5' cols='40' required></textarea></dd>
+            <dt>Price:</dt>
+                        <dd><input type = 'text' size = '8' name='price' required></dd>
+            <dt>Condition:</dt>
+                        <dd><input type ='radio' name='condition' value='Poor' checked>Poor</dd>
+                        <dd><input type ='radio' name='condition' value='Good'>Good</dd>
+                        <dd><input type ='radio' name='condition' value='Great'>Great</dd>
+                        <dd><input type ='radio' name='condition' value='Excellent'>Excellent</dd>
+  </dl>
+
+
+  <input type='submit' value='Create'>
+
+</form>
+</div>
+	</body>
+
+
+
+
+</html>
