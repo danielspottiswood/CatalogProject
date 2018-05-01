@@ -13,14 +13,14 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'User'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement = True)
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
     picture = Column(String(250))
 
 class Category(Base):
     __tablename__ = 'Category'
-    id = Column(Integer, primary_key = True)
+    id = Column(Integer, primary_key = True, autoincrement = True)
     name = Column(String(80), nullable = False)
     #user_id = Column(Integer, ForeignKey('User.id'))
     #User = relationship(User)
@@ -37,7 +37,7 @@ class Category(Base):
 
 class Item(Base):
     __tablename__ = 'Item'
-    id = Column(Integer, primary_key = True)
+    id = Column(Integer, primary_key = True, autoincrement = True)
     name = Column(String(80), nullable = False)
     description = Column(String(200))
     condition = Column(String(100), nullable = False)

@@ -138,14 +138,18 @@ def itemJSON(Category_id, item_id):
 
 @app.route("/")
 def application():
-    print("we are in this")
-    newUser = User(id = 1, name = "daniel", email = "danielspottiswood@gmail.com")
+    #newUser = User(id = 1, name = "daniel", email = "danielspottiswood@gmail.com")
     #newcategory = Category(id = 1, name = "Cleaning")
-    newItem = Item(name = "swiffer", description="new swiffer",price="100",condition="good", Category_id = 1, User_id=1)
-    session.add(newItem)
-    session.commit()
+    #session.add(newUser)
+    #session.commit()
+    #session.add(newcategory)
+    #session.commit()
+    #newItem = Item(name = "swiffer", description="new swiffer",price="100",condition="good", Category_id = 1, User_id=1)
+    #session.add(newItem)
+    #session.commit()
+    items = session.query(Item).all()
+    print(items[0].User_id)
     categories = session.query(Category).all()
-    print("we are out of this")
     return render_template("home.html", Categories = categories)
 
 @app.route('/categories/<int:Category_id>/')
@@ -156,10 +160,10 @@ def categoryitems(Category_id):
 
 @app.route('/categories/<int:Category_id>/new', methods =['Get','Post'])
 def newCategoryItem(Category_id):
-    #if 'username' not in login_session:
-        #return redirect('/login')
+    if 'username' not in login_session:
+        return redirect('/login')
     if request.method == 'POST':
-        newItem = Item(name = request.form['name'], description=request.form['description'],price=request.form['price'],condition=request.form['condition'], Category_id = Category_id, user_id=login_session['user_id'])
+        newItem = Item(name = request.form['name'], description=request.form['description'],price=request.form['price'],condition=request.form['condition'], Category_id = Category_id, user_id=login_session['User_id'])
         session.add(newItem)
         session.commit()
         print("Committed")
@@ -170,8 +174,8 @@ def newCategoryItem(Category_id):
 @app.route('/categories/<int:Category_id>/<int:item_id>/edit',
            methods=['GET', 'POST'])
 def editCategoryItem(Category_id, item_id):
-    #if 'username' not in login_session:
-    #    return redirect('/login')
+    if 'username' not in login_session:
+        return redirect('/login')
     editedItem = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
         if request.form['name']:
