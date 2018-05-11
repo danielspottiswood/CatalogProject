@@ -138,17 +138,17 @@ def itemJSON(Category_id, item_id):
 
 @app.route("/")
 def application():
-    #newUser = User(id = 1, name = "daniel", email = "danielspottiswood@gmail.com")
-    #newcategory = Category(id = 1, name = "Cleaning")
+    #newUser = User(id = 2, name = "michael", email = "michael@gmail.com")
+    #newcategory = Category(id = 2, name = "Entertainment")
     #session.add(newUser)
     #session.commit()
     #session.add(newcategory)
     #session.commit()
-    #newItem = Item(name = "swiffer", description="new swiffer",price="100",condition="good", Category_id = 1, User_id=1)
+    #newItem = Item(name = "TV", description="Plasma Flat Screen TV Samsung",price="80",condition="great", Category_id = 2, User_id=2)
     #session.add(newItem)
     #session.commit()
     items = session.query(Item).all()
-    print(items[0].User_id)
+    print(items[1].User_id)
     categories = session.query(Category).all()
     return render_template("home.html", Categories = categories)
 
