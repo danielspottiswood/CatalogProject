@@ -29,10 +29,6 @@ class Category(Base):
         return {
             'name' : self.name,
             'id' : self.id,
-            #'user_id' : self.user_id
-            #'description' = self.description,
-            #'condition' = self.condition,
-            #'price' = self.price
         }
 
 class Item(Base):
@@ -48,14 +44,14 @@ class Item(Base):
     User = relationship(User)
     @property
     def serialize(self):
-
+        """Return object data in easily serializeable format"""
         return {
-            'name' : self.name,
-            'id' : self.id
-            #'description' = self.description,
-            #'condition' = self.condition,
-            #'price' = self.price
-            }
+            'name': self.name,
+            'description': self.description,
+            'id': self.id,
+            'condition': self.condition,
+            'price': self.price,
+        }
 
 engine = create_engine('sqlite:///catalog_database.db')
 

@@ -125,15 +125,22 @@ def fbdisconnect():
 @app.route('/categories/<int:Category_id>/JSON')
 def CategoryListJSON(Category_id):
     category = session.query(Category).filter_by(id=Category_id).one()
-    items = session.query(Item).filter_by(id=Category_id).all()
+    items = session.query(Item).filter_by(Category_id=Category_id).all()
     return jsonify(Items=[i.serialize for i in items])
 
 
 ##Need to fix right now just showing the first one
 @app.route('/categories/<int:Category_id>/<int:item_id>/JSON')
 def itemJSON(Category_id, item_id):
-    item = session.query(Item).filter_by(Category_id = Category_id).one()
+    print(item_id)
+    item = session.query(Item).filter_by(id = item_id).one()
     return jsonify(Item=item.serialize)
+
+
+@app.route('/categories/JSON')
+def restaurantsJSON():
+    categories = session.query(Category).all()
+    return jsonify(categories=[c.serialize for c in categories])
 
 
 @app.route("/")
@@ -177,6 +184,8 @@ def editCategoryItem(Category_id, item_id):
     if 'username' not in login_session:
         return redirect('/login')
     editedItem = session.query(Item).filter_by(id=item_id).one()
+    if editedRestaurant.User_id != login_session['user_id']:
+        return "<script>function myFunction() {alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');}</script><body onload='myFunction()'>"
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -196,9 +205,11 @@ def editCategoryItem(Category_id, item_id):
 @app.route('/categories/<int:Category_id>/<int:item_id>/delete',
            methods=['GET', 'POST'])
 def deleteCategoryItem(Category_id, item_id):
-    #if 'username' not in login_session:
-    #    return redirect('/login')
+    if 'username' not in login_session:
+        return redirect('/login')
     deleteItem = session.query(Item).filter_by(id=item_id).one()
+    if restaurantToDelete.User_id != login_session['user_id']:
+        return "<script>function myFunction() {alert('You are not authorized to delete this restaurant. Please create your own restaurant in order to delete.');}</script><body onload='myFunction()'>"
     if request.method =='POST':
         session.delete(deleteItem)
         session.commit()
