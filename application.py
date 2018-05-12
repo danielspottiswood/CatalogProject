@@ -37,7 +37,7 @@ def showLogin():
     # return "The current session state is %s" % login_session['state']
     return render_template('login.html', STATE=state)
 
-
+#The facebook login
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
     if request.args.get('state') != login_session['state']:
@@ -121,7 +121,6 @@ def fbdisconnect():
     return "you have been logged out"
 
 
-#Right now it is just showing the first one and not a list
 @app.route('/categories/<int:Category_id>/JSON')
 def CategoryListJSON(Category_id):
     category = session.query(Category).filter_by(id=Category_id).one()
@@ -129,10 +128,8 @@ def CategoryListJSON(Category_id):
     return jsonify(Items=[i.serialize for i in items])
 
 
-##Need to fix right now just showing the first one
 @app.route('/categories/<int:Category_id>/<int:item_id>/JSON')
 def itemJSON(Category_id, item_id):
-    print(item_id)
     item = session.query(Item).filter_by(id = item_id).one()
     return jsonify(Item=item.serialize)
 
@@ -145,15 +142,6 @@ def restaurantsJSON():
 
 @app.route("/")
 def application():
-    #newUser = User(id = 2, name = "michael", email = "michael@gmail.com")
-    #newcategory = Category(id = 2, name = "Entertainment")
-    #session.add(newUser)
-    #session.commit()
-    #session.add(newcategory)
-    #session.commit()
-    #newItem = Item(name = "TV", description="Plasma Flat Screen TV Samsung",price="80",condition="great", Category_id = 2, User_id=2)
-    #session.add(newItem)
-    #session.commit()
     items = session.query(Item).all()
     print(items[1].User_id)
     categories = session.query(Category).all()
@@ -164,6 +152,7 @@ def categoryitems(Category_id):
     category = session.query(Category).filter_by(id=Category_id).one()
     items = session.query(Item).filter_by(Category_id= Category_id)
     return render_template('Category.html', items = items, Category = category, Category_id = Category_id)
+
 
 @app.route('/categories/<int:Category_id>/new', methods =['Get','Post'])
 def newCategoryItem(Category_id):
@@ -178,6 +167,7 @@ def newCategoryItem(Category_id):
     else:
         return render_template('newcategoryitem.html', Category_id = Category_id, Category = Category)
 
+#Allows user to edit the item if they are the same user that created it
 @app.route('/categories/<int:Category_id>/<int:item_id>/edit',
            methods=['GET', 'POST'])
 def editCategoryItem(Category_id, item_id):
@@ -202,6 +192,7 @@ def editCategoryItem(Category_id, item_id):
         return render_template(
             'editCategoryItem.html', Category_id=Category_id, item_id=item_id, item = editedItem)
 
+#Allows user to delete the item if they are the same user that created it
 @app.route('/categories/<int:Category_id>/<int:item_id>/delete',
            methods=['GET', 'POST'])
 def deleteCategoryItem(Category_id, item_id):
@@ -216,6 +207,7 @@ def deleteCategoryItem(Category_id, item_id):
         return redirect(url_for('categoryitems', Category_id = Category_id))
     else:
         return render_template('deleteconfirmation.html', Category_id = Category_id, item=deleteItem)
+#Helper functions for the login capability
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])

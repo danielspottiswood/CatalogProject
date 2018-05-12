@@ -11,6 +11,7 @@ from sqlalchemy import create_engine
 Base = declarative_base()
 
 
+#Creates the User class
 class User(Base):
     __tablename__ = 'User'
     id = Column(Integer, primary_key=True, autoincrement = True)
@@ -18,12 +19,13 @@ class User(Base):
     email = Column(String(250), nullable=False)
     picture = Column(String(250))
 
+#Creates the Category class
 class Category(Base):
     __tablename__ = 'Category'
     id = Column(Integer, primary_key = True, autoincrement = True)
     name = Column(String(80), nullable = False)
-    #user_id = Column(Integer, ForeignKey('User.id'))
-    #User = relationship(User)
+
+    #This enables the JSON funcionality
     @property
     def serialize(self):
         return {
@@ -31,6 +33,7 @@ class Category(Base):
             'id' : self.id,
         }
 
+#Creates the Item class
 class Item(Base):
     __tablename__ = 'Item'
     id = Column(Integer, primary_key = True, autoincrement = True)
@@ -42,6 +45,8 @@ class Item(Base):
     Category = relationship(Category)
     User_id = Column(Integer, ForeignKey('User.id'))
     User = relationship(User)
+
+    #This enables the JSON funcionality
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
