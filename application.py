@@ -163,7 +163,7 @@ def newCategoryItem(Category_id):
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        newItem = Item(name = request.form['name'], description=request.form['description'],price=request.form['price'],condition=request.form['condition'], Category_id = Category_id, user_id=login_session['User_id'])
+        newItem = Item(name = request.form['name'], description=request.form['description'],price=request.form['price'],condition=request.form['condition'], Category_id = Category_id, User_id=login_session['user_id'])
         session.add(newItem)
         session.commit()
         print("Committed")
