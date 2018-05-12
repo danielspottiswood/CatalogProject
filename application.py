@@ -1,4 +1,8 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import Flask, render_template, jsonify, url_for, flash
+from flask import request, redirect
+from flask import session as login_session
+import random
+import string
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item, User
@@ -15,16 +19,11 @@ app = Flask(__name__)
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog Menu"
-
-from flask import session as login_session
-import random, string
-
 engine = create_engine('sqlite:///catalog_database.db')
 Base.metadata.bind = engine
 
-DBSession = sessionmaker(bind = engine)
+DBSession = sessionmaker(bind=engine)
 session = DBSession()
-
 
 
 # Create anti-forgery state token
@@ -37,7 +36,8 @@ def showLogin():
     # return "The current session state is %s" % login_session['state']
     return render_template('login.html', STATE=state)
 
-#The facebook login
+
+# The facebook login
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
     if request.args.get('state') != login_session['state']:
@@ -46,45 +46,45 @@ def fbconnect():
         return response
     access_token = request.data
     print "access token received %s " % access_token
-
-
     app_id = json.loads(open('fb_client_secrets.json', 'r').read())[
         'web']['app_id']
     app_secret = json.loads(
         open('fb_client_secrets.json', 'r').read())['web']['app_secret']
-    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
-        app_id, app_secret, access_token)
+    url = \
+        'https://graph.facebook.com/oauth/access_token?grant_type=fb_', \
+        'exchange_token&client_id=%s&client_', \
+        'secret=%s&fb_exchange_token=%s' % (app_id, app_secret, access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
-
-
     # Use token to get user info from API
     userinfo_url = "https://graph.facebook.com/v2.8/me"
     '''
-        Due to the formatting for the result from the server token exchange we have to
-        split the token first on commas and select the first index which gives us the key : value
-        for the server access token then we split it on colons to pull out the actual token value
-        and replace the remaining quotes with nothing so that it can be used directly in the graph
+        Due to the formatting for the result from the server token exchange
+        we have to split the token first on commas and
+        select the first index which gives us the key : value
+        for the server access token then we split
+        it on colons to pull out the actual token value
+        and replace the remaining quotes
+        with nothing so that it can be used directly in the graph
         api calls
     '''
     token = result.split(',')[0].split(':')[1].replace('"', '')
-
-    url = 'https://graph.facebook.com/v2.8/me?access_token=%s&fields=name,id,email' % token
+    url = 'https://graph.facebook.com/v2.8/me?acce', \
+        'ss_token=%s&fields=name,id,email' % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
-    print "url sent for API access:%s"% url
+    print "url sent for API access:%s" % url
     print "API JSON result: %s" % result
     data = json.loads(result)
     login_session['provider'] = 'facebook'
     login_session['username'] = data["name"]
     login_session['email'] = data["email"]
     login_session['facebook_id'] = data["id"]
-
     # The token must be stored in the login_session in order to properly logout
     login_session['access_token'] = token
-
     # Get user picture
-    url = 'https://graph.facebook.com/v2.8/me/picture?access_token=%s&redirect=0&height=200&width=200' % token
+    url = 'https://graph.facebook.com/v2.8/me/pict', \
+        'ure?access_token=%s&redirect=0&height=200&width=200' % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     data = json.loads(result)
@@ -104,7 +104,8 @@ def fbconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: ', \
+        '150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     print("We are getting almost there")
     flash("Now logged in as %s" % login_session['username'])
     return output
@@ -115,7 +116,8 @@ def fbdisconnect():
     facebook_id = login_session['facebook_id']
     # The access token must me included to successfully logout
     access_token = login_session['access_token']
-    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id,access_token)
+    url = 'https://graph.facebook.com/%s/permissions?acce', \
+        'ss_token=%s' % (facebook_id, access_token)
     h = httplib2.Http()
     result = h.request(url, 'DELETE')[1]
     return "you have been logged out"
@@ -130,7 +132,7 @@ def CategoryListJSON(Category_id):
 
 @app.route('/categories/<int:Category_id>/<int:item_id>/JSON')
 def itemJSON(Category_id, item_id):
-    item = session.query(Item).filter_by(id = item_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
     return jsonify(Item=item.serialize)
 
 
@@ -145,37 +147,49 @@ def application():
     items = session.query(Item).all()
     print(items[1].User_id)
     categories = session.query(Category).all()
-    return render_template("home.html", Categories = categories)
+    return render_template("home.html", Categories=categories)
+
 
 @app.route('/categories/<int:Category_id>/')
 def categoryitems(Category_id):
     category = session.query(Category).filter_by(id=Category_id).one()
-    items = session.query(Item).filter_by(Category_id= Category_id)
-    return render_template('Category.html', items = items, Category = category, Category_id = Category_id)
+    items = session.query(Item).filter_by(Category_id=Category_id)
+    return render_template('Category.html', items=items,
+                           Category=category, Category_id=Category_id)
 
 
-@app.route('/categories/<int:Category_id>/new', methods =['Get','Post'])
+@app.route('/categories/<int:Category_id>/new', methods=['Get', 'Post'])
 def newCategoryItem(Category_id):
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        newItem = Item(name = request.form['name'], description=request.form['description'],price=request.form['price'],condition=request.form['condition'], Category_id = Category_id, User_id=login_session['user_id'])
+        newItem = Item(name=request.form['name'], description=req
+                       uest.form['description'],
+                       price=request.form['price'],
+                       condition=request.form['condition'],
+                       Category_id=Category_id,
+                       User_id=login_session['user_id'])
         session.add(newItem)
         session.commit()
         print("Committed")
-        return redirect(url_for("categoryitems", Category_id = Category_id))
+        return redirect(url_for("categoryitems", Category_id=Category_id))
     else:
-        return render_template('newcategoryitem.html', Category_id = Category_id, Category = Category)
+        return render_template('newcategoryitem.html',
+                               Category_id=Category_id, Category=Category)
 
-#Allows user to edit the item if they are the same user that created it
+
+# Allows user to edit the item if they are the same user that created it
 @app.route('/categories/<int:Category_id>/<int:item_id>/edit',
            methods=['GET', 'POST'])
 def editCategoryItem(Category_id, item_id):
     if 'username' not in login_session:
         return redirect('/login')
     editedItem = session.query(Item).filter_by(id=item_id).one()
-    if editedRestaurant.User_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');}</script><body onload='myFunction()'>"
+    if editedItem.User_id != login_session['user_id']:
+        return "<script>function myFunction()", \
+                "{alert('You are not authorized to edit this restaurant.", \
+                "Please create your own restaurant in order to edit.');}", \
+                "</script><body onload='myFunction()'>"
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -190,24 +204,32 @@ def editCategoryItem(Category_id, item_id):
         return redirect(url_for('categoryitems', Category_id=Category_id))
     else:
         return render_template(
-            'editCategoryItem.html', Category_id=Category_id, item_id=item_id, item = editedItem)
+                               'editCategoryItem.html', Category_id=Cate
+                               gory_id, item_id=item_id, item=editedItem)
 
-#Allows user to delete the item if they are the same user that created it
+
+# Allows user to delete the item if they are the same user that created it
 @app.route('/categories/<int:Category_id>/<int:item_id>/delete',
            methods=['GET', 'POST'])
 def deleteCategoryItem(Category_id, item_id):
     if 'username' not in login_session:
         return redirect('/login')
     deleteItem = session.query(Item).filter_by(id=item_id).one()
-    if restaurantToDelete.User_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to delete this restaurant. Please create your own restaurant in order to delete.');}</script><body onload='myFunction()'>"
-    if request.method =='POST':
+    if deleteItem.User_id != login_session['user_id']:
+        return "<script>function myFunction() {alert('Yo", \
+            "u are not authorized to delete this restaurant. Please ", \
+            "create your own restaurant in order to del", \
+            "ete.');}</script><body onload='myFunction()'>"
+    if request.method == 'POST':
         session.delete(deleteItem)
         session.commit()
-        return redirect(url_for('categoryitems', Category_id = Category_id))
+        return redirect(url_for('categoryitems', Category_id=Category_id))
     else:
-        return render_template('deleteconfirmation.html', Category_id = Category_id, item=deleteItem)
-#Helper functions for the login capability
+        return render_template('deleteconfirmation.html', Categ
+                               ory_id=Category_id, item=deleteItem)
+
+                       
+# Helper functions for the login capability
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
