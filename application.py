@@ -50,10 +50,10 @@ def fbconnect():
         'web']['app_id']
     app_secret = json.loads(
         open('fb_client_secrets.json', 'r').read())['web']['app_secret']
-    url = \
-        'https://graph.facebook.com/oauth/access_token?grant_type=fb_', \
+    url ='https://graph.facebook.com/oauth/access_token?grant_type=fb_', \
         'exchange_token&client_id=%s&client_', \
-        'secret=%s&fb_exchange_token=%s' % (app_id, app_secret, access_token)
+        'secret=%s&fb_exchange_token=%s' \
+         % (app_id, app_secret, access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     # Use token to get user info from API
@@ -145,7 +145,6 @@ def restaurantsJSON():
 @app.route("/")
 def application():
     items = session.query(Item).all()
-    print(items[1].User_id)
     categories = session.query(Category).all()
     return render_template("home.html", Categories=categories)
 
@@ -163,8 +162,7 @@ def newCategoryItem(Category_id):
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        newItem = Item(name=request.form['name'], description=req
-                       uest.form['description'],
+        newItem = Item(name=request.form['name'], description=request.form['description'],
                        price=request.form['price'],
                        condition=request.form['condition'],
                        Category_id=Category_id,
@@ -204,8 +202,8 @@ def editCategoryItem(Category_id, item_id):
         return redirect(url_for('categoryitems', Category_id=Category_id))
     else:
         return render_template(
-                               'editCategoryItem.html', Category_id=Cate
-                               gory_id, item_id=item_id, item=editedItem)
+                               'editCategoryItem.html', Category_id=Category_id,
+                               item_id=item_id, item=editedItem)
 
 
 # Allows user to delete the item if they are the same user that created it
@@ -225,10 +223,10 @@ def deleteCategoryItem(Category_id, item_id):
         session.commit()
         return redirect(url_for('categoryitems', Category_id=Category_id))
     else:
-        return render_template('deleteconfirmation.html', Categ
-                               ory_id=Category_id, item=deleteItem)
+        return render_template('deleteconfirmation.html',
+                               Category_id=Category_id, item=deleteItem)
 
-                       
+
 # Helper functions for the login capability
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
