@@ -50,10 +50,10 @@ def fbconnect():
         'web']['app_id']
     app_secret = json.loads(
         open('fb_client_secrets.json', 'r').read())['web']['app_secret']
-    url ='https://graph.facebook.com/oa' \
-         'uth/access_token?grant_type=fb_exchang' \
-         'e_token&client_id=%s&client_secre' \
-         't=%s&fb_exchange_token=%s' % (app_id, app_secret, access_token)
+    url = 'https://graph.facebook.com/oa' \
+          'uth/access_token?grant_type=fb_exchang' \
+          'e_token&client_id=%s&client_secre' \
+          't=%s&fb_exchange_token=%s' % (app_id, app_secret, access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     # Use token to get user info from API
@@ -166,7 +166,8 @@ def newCategoryItem(Category_id):
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        newItem = Item(name=request.form['name'], description=request.form['description'],
+        newItem = Item(name=request.form['name'],
+                       description=request.form['description'],
                        price=request.form['price'],
                        condition=request.form['condition'],
                        Category_id=Category_id,
@@ -206,7 +207,8 @@ def editCategoryItem(Category_id, item_id):
         return redirect(url_for('categoryitems', Category_id=Category_id))
     else:
         return render_template(
-                               'editCategoryItem.html', Category_id=Category_id,
+                               'editCategoryItem.html',
+                               Category_id=Category_id,
                                item_id=item_id, item=editedItem)
 
 
