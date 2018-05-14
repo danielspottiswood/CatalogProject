@@ -50,10 +50,10 @@ def fbconnect():
         'web']['app_id']
     app_secret = json.loads(
         open('fb_client_secrets.json', 'r').read())['web']['app_secret']
-    url ='https://graph.facebook.com/oauth/access_token?grant_type=fb_', \
-        'exchange_token&client_id=%s&client_', \
-        'secret=%s&fb_exchange_token=%s' \
-         % (app_id, app_secret, access_token)
+    url ='https://graph.facebook.com/oa' \
+         'uth/access_token?grant_type=fb_exchang' \
+         'e_token&client_id=%s&client_secre' \
+         't=%s&fb_exchange_token=%s' % (app_id, app_secret, access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     # Use token to get user info from API
@@ -69,8 +69,9 @@ def fbconnect():
         api calls
     '''
     token = result.split(',')[0].split(':')[1].replace('"', '')
-    url = 'https://graph.facebook.com/v2.8/me?acce', \
-        'ss_token=%s&fields=name,id,email' % token
+    url = 'https://graph.facebook.' \
+          'com/v2.8/me?access_token=%s&fiel' \
+          'ds=name,id,email' % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     print "url sent for API access:%s" % url
@@ -83,10 +84,12 @@ def fbconnect():
     # The token must be stored in the login_session in order to properly logout
     login_session['access_token'] = token
     # Get user picture
-    url = 'https://graph.facebook.com/v2.8/me/pict', \
-        'ure?access_token=%s&redirect=0&height=200&width=200' % token
+    url = 'https://graph.facebook.com/v2.8' \
+          '/me/picture?access_token=%s&redi' \
+          'rect=0&height=200&width=200' % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
+    print("Got past this boy")
     data = json.loads(result)
 
     login_session['picture'] = data["data"]["url"]
@@ -104,8 +107,9 @@ def fbconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: ', \
-        '150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;' \
+              'border-radius: 150px;-webkit-border-radius: ' \
+              '150px;-moz-border-radius: 150px;"> '
     print("We are getting almost there")
     flash("Now logged in as %s" % login_session['username'])
     return output
@@ -184,9 +188,9 @@ def editCategoryItem(Category_id, item_id):
         return redirect('/login')
     editedItem = session.query(Item).filter_by(id=item_id).one()
     if editedItem.User_id != login_session['user_id']:
-        return "<script>function myFunction()", \
-                "{alert('You are not authorized to edit this restaurant.", \
-                "Please create your own restaurant in order to edit.');}", \
+        return "<script>function myFunction()" \
+                "{alert('You are not authorized to edit this restaurant." \
+                "Please create your own restaurant in order to edit.');}" \
                 "</script><body onload='myFunction()'>"
     if request.method == 'POST':
         if request.form['name']:
@@ -214,9 +218,9 @@ def deleteCategoryItem(Category_id, item_id):
         return redirect('/login')
     deleteItem = session.query(Item).filter_by(id=item_id).one()
     if deleteItem.User_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('Yo", \
-            "u are not authorized to delete this restaurant. Please ", \
-            "create your own restaurant in order to del", \
+        return "<script>function myFunction() {alert('Yo" \
+            "u are not authorized to delete this restaurant. Please " \
+            "create your own restaurant in order to del" \
             "ete.');}</script><body onload='myFunction()'>"
     if request.method == 'POST':
         session.delete(deleteItem)
